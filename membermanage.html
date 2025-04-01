@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <title>إدارة الأعضاء</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f4f4f4; color: #333; direction: rtl; line-height: 1.6; padding: 20px; }
+    header { background: #007BFF; color: #fff; padding: 15px 20px; border-radius: 5px; margin-bottom: 20px; }
+    header h1 { margin-bottom: 10px; font-size: 24px; }
+    section { margin-bottom: 30px; }
+    section h2 { margin-bottom: 15px; font-size: 20px; border-bottom: 2px solid #ccc; padding-bottom: 5px; }
+    input, button { padding: 10px; margin: 10px 0; width: 100%; max-width: 400px; }
+    input[type="text"] { font-size: 14px; }
+    .member-list { list-style-type: none; padding: 0; }
+    .member-list li { padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; }
+    .member-list button { margin-left: 10px; padding: 5px 10px; background: #f44336; color: white; border: none; cursor: pointer; }
+    .member-list button:hover { background: #d32f2f; }
+    .edit-modal { display: none; background-color: rgba(0, 0, 0, 0.5); position: fixed; top: 0; left: 0; width: 100%; height: 100%; justify-content: center; align-items: center; }
+    .edit-modal .modal-content { background-color: white; padding: 20px; border-radius: 5px; width: 300px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>إدارة الأعضاء</h1>
+        <nav>
+          <a href="index.html">الرئيسية</a>
+          <a href="sectors.html">القطاعات</a>
+          <a href="trash.html">سلة المحذوفات</a>
+          <a href="membermanage.html"> الاعضاء</a>
+        </nav>
+      </header>
+
+  <section id="add-member-section">
+    <h2>إضافة عضو جديد</h2>
+    <input type="text" id="memberName" placeholder="اسم الحساب" />
+    <input type="text" id="memberCardCode" placeholder="كود البطاقة البنكية" />
+    <input type="text" id="memberRank" placeholder="الرتبة" />
+    <input type="text" id="memberAchievements" placeholder="الإنجازات" />
+    <input type="text" id="memberViolations" placeholder="المخالفات" />
+    <button id="addMemberBtn">إضافة عضو</button>
+  </section>
+
+  <section id="members-section">
+    <h2>قائمة الأعضاء</h2>
+    <ul id="members-list" class="member-list"></ul>
+  </section>
+
+  <!-- Modal for editing a member -->
+  <div id="editModal" class="edit-modal">
+    <div class="modal-content">
+      <h3>تعديل بيانات العضو</h3>
+      <input type="text" id="editMemberName" placeholder="اسم الحساب" />
+      <input type="text" id="editMemberCardCode" placeholder="كود البطاقة البنكية" />
+      <input type="text" id="editMemberRank" placeholder="الرتبة" />
+      <input type="text" id="editMemberAchievements" placeholder="الإنجازات" />
+      <input type="text" id="editMemberViolations" placeholder="المخالفات" />
+      <button id="updateMemberBtn">تحديث</button>
+      <button id="closeEditModalBtn">إغلاق</button>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDr1lB9EWknmFTFiAjyMgizLeAuoc8GLH4",
+      authDomain: "anim-b28b3.firebaseapp.com",
+      projectId: "anim-b28b3",
+      storageBucket: "anim-b28b3.firebasestorage.app",
+      messagingSenderId: "246758005181",
+      appId: "1:246758005181:web:0fda721c7d138e19871ad4",
+      measurementId: "G-M0BXLKKC9S"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Get DOM elements
+    const memberNameInput = document.getElementById("memberName");
+    const memberCardCodeInput = document.getElementById("memberCardCode");
+    const memberRankInput = document.getElementById("memberRank");
+    const memberAchievementsInput = document.getElementById("memberAchievements");
+    const memberViolationsInput = document.getElementById("memberViolations");
+    const addMemberBtn = document.getElementById("addMemberBtn");
+    const membersList = document.getElementById("members-list");
+
+    // Edit Modal Elements
+    const editModal = document.getElementById("editModal");
+    const editMemberNameInput = document.getElementById("editMemberName");
+    const editMemberCardCodeInput = document.getElementById("editMemberCardCode");
+    const editMemberRankInput = document.getElementById("editMemberRank");
+    const editMemberAchievementsInput = document.getElementById("editMemberAchievements");
+    const editMemberViolationsInput = document.getElementById("editMemberViolations");
+    const updateMemberBtn = document.getElementById("updateMemberBtn");
+    const closeEditModalBtn = document.getElementById("closeEditModalBtn");
+
+    let currentEditId = null;
+
+    // Add Member to Firestore
+    addMemberBtn.addEventListener("click", async () => {
+      const name = memberNameInput.value;
+      const cardCode = memberCardCodeInput.value;
+      const rank = memberRankInput.value;
+      const achievements = memberAchievementsInput.value;
+      const violations = memberViolationsInput.value;
+
+      if (!name || !cardCode) return;
+
+      try {
+        const docRef = await db.collection("members").add({
+          name,
+          cardCode,
+          rank,
+          achievements,
+          violations,
+          registeredAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        memberNameInput.value = "";
+        memberCardCodeInput.value = "";
+        memberRankInput.value = "";
+        memberAchievementsInput.value = "";
+        memberViolationsInput.value = "";
+
+        alert("تم إضافة العضو بنجاح");
+
+        // Update UI with the new member
+        const newMember = document.createElement("li");
+        newMember.id = docRef.id;
+        newMember.innerHTML = `
+          <p><strong>اسم العضو:</strong> ${name}</p>
+          <p><strong>كود البطاقة:</strong> ${cardCode}</p>
+          <p><strong>الرتبة:</strong> ${rank}</p>
+          <p><strong>الإنجازات:</strong> ${achievements}</p>
+          <p><strong>المخالفات:</strong> ${violations}</p>
+          <button onclick="deleteMember('${docRef.id}')">حذف</button>
+          <button onclick="openEditModal('${docRef.id}')">تعديل</button>
+        `;
+        membersList.appendChild(newMember);
+
+      } catch (error) {
+        console.error("Error adding member: ", error);
+        alert("حدث خطأ أثناء إضافة العضو");
+      }
+    });
+
+    // Delete Member from Firestore and move to Trash
+    async function deleteMember(memberId) {
+      try {
+        const memberDoc = await db.collection("members").doc(memberId).get();
+        const memberData = memberDoc.data();
+
+        // Move to Trash
+        await db.collection("trash").doc(memberId).set(memberData);
+        // Delete from Members
+        await db.collection("members").doc(memberId).delete();
+
+        // Remove from UI
+        const memberItem = document.getElementById(memberId);
+        membersList.removeChild(memberItem);
+
+        alert("تم حذف العضو بنجاح");
+
+      } catch (error) {
+        console.error("Error deleting member: ", error);
+        alert("حدث خطأ أثناء حذف العضو");
+      }
+    }
+
+    // Open Edit Modal
+    function openEditModal(memberId) {
+      currentEditId = memberId;
+      db.collection("members").doc(memberId).get().then((doc) => {
+        const member = doc.data();
+        editMemberNameInput.value = member.name;
+        editMemberCardCodeInput.value = member.cardCode;
+        editMemberRankInput.value = member.rank;
+        editMemberAchievementsInput.value = member.achievements;
+        editMemberViolationsInput.value = member.violations;
+      });
+      editModal.style.display = "flex";
+    }
+
+    // Close Edit Modal
+    closeEditModalBtn.addEventListener("click", () => {
+      editModal.style.display = "none";
+    });
+
+    // Update Member in Firestore
+    updateMemberBtn.addEventListener("click", async () => {
+      const updatedMember = {
+        name: editMemberNameInput.value,
+        cardCode: editMemberCardCodeInput.value,
+        rank: editMemberRankInput.value,
+        achievements: editMemberAchievementsInput.value,
+        violations: editMemberViolationsInput.value
+      };
+
+      await db.collection("members").doc(currentEditId).update(updatedMember);
+
+      // Update UI
+      const memberItem = document.getElementById(currentEditId);
+      memberItem.innerHTML = `
+        <p><strong>اسم العضو:</strong> ${updatedMember.name}</p>
+        <p><strong>كود البطاقة:</strong> ${updatedMember.cardCode}</p>
+        <p><strong>الرتبة:</strong> ${updatedMember.rank}</p>
+        <p><strong>الإنجازات:</strong> ${updatedMember.achievements}</p>
+        <p><strong>المخالفات:</strong> ${updatedMember.violations}</p>
+        <button onclick="deleteMember('${currentEditId}')">حذف</button>
+        <button onclick="openEditModal('${currentEditId}')">تعديل</button>
+      `;
+
+      alert("تم تحديث بيانات العضو");
+
+      editModal.style.display = "none";
+    });
+
+    // Fetch Members from Firestore
+    async function fetchMembers() {
+      const snapshot = await db.collection("members").get();
+      snapshot.forEach(doc => {
+        const member = doc.data();
+        const memberItem = document.createElement("li");
+        memberItem.id = doc.id;
+        memberItem.innerHTML = `
+          <p><strong>اسم العضو:</strong> ${member.name}</p>
+          <p><strong>كود البطاقة:</strong> ${member.cardCode}</p>
+          <p><strong>الرتبة:</strong> ${member.rank}</p>
+          <p><strong>الإنجازات:</strong> ${member.achievements}</p>
+          <p><strong>المخالفات:</strong> ${member.violations}</p>
+          <button onclick="deleteMember('${doc.id}')">حذف</button>
+          <button onclick="openEditModal('${doc.id}')">تعديل</button>
+        `;
+        membersList.appendChild(memberItem);
+      });
+    }
+
+    // Call fetch function to load members initially
+    fetchMembers();
+  </script>
+</body>
+</html>

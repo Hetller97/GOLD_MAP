@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <title>سلة المحذوفات</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f4f4f4; color: #333; direction: rtl; line-height: 1.6; padding: 20px; }
+    header { background: #007BFF; color: #fff; padding: 15px 20px; border-radius: 5px; margin-bottom: 20px; }
+    header h1 { margin-bottom: 10px; font-size: 24px; }
+    section { margin-bottom: 30px; }
+    section h2 { margin-bottom: 15px; font-size: 20px; border-bottom: 2px solid #ccc; padding-bottom: 5px; }
+    input, button { padding: 10px; margin: 10px 0; width: 100%; max-width: 400px; }
+    input[type="text"] { font-size: 14px; }
+    .member-list { list-style-type: none; padding: 0; }
+    .member-list li { padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; }
+    .member-list button { margin-left: 10px; padding: 5px 10px; background: #f44336; color: white; border: none; cursor: pointer; }
+    .member-list button:hover { background: #d32f2f; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>سلة المحذوفات</h1>
+    <nav>
+      <a href="index.html">الرئيسية</a>
+      <a href="sectors.html">القطاعات</a>
+      <a href="trash.html">سلة المحذوفات</a>
+      <a href="membermanage.html">الأعضاء</a>
+    </nav>
+  </header>
+
+  <section id="search-section">
+    <h2>بحث عن عضو</h2>
+    <input type="text" id="searchInput" placeholder="ابحث عن اسم الحساب أو كود البطاقة البنكية أو الرتبة" />
+  </section>
+
+  <section id="deleted-members-section">
+    <h2>قائمة الأعضاء المحذوفين</h2>
+    <ul id="deleted-members-list" class="member-list"></ul>
+  </section>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDr1lB9EWknmFTFiAjyMgizLeAuoc8GLH4",
+      authDomain: "anim-b28b3.firebaseapp.com",
+      projectId: "anim-b28b3",
+      storageBucket: "anim-b28b3.firebasestorage.app",
+      messagingSenderId: "246758005181",
+      appId: "1:246758005181:web:0fda721c7d138e19871ad4",
+      measurementId: "G-M0BXLKKC9S"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Get DOM elements
+    const searchInput = document.getElementById("searchInput");
+    const deletedMembersList = document.getElementById("deleted-members-list");
+
+    // Fetch Deleted Members from Firestore
+    async function fetchDeletedMembers() {
+      const snapshot = await db.collection("trash").get();
+      snapshot.forEach(doc => {
+        const member = doc.data();
+        const memberItem = document.createElement("li");
+        memberItem.id = doc.id;
+        memberItem.innerHTML = `
+          <p><strong>اسم العضو:</strong> ${member.name}</p>
+          <p><strong>كود البطاقة:</strong> ${member.cardCode}</p>
+          <p><strong>الرتبة:</strong> ${member.rank}</p>
+          <p><strong>الإنجازات:</strong> ${member.achievements}</p>
+          <p><strong>المخالفات:</strong> ${member.violations}</p>
+        `;
+        deletedMembersList.appendChild(memberItem);
+      });
+    }
+
+    // Filter Deleted Members based on Search Input
+    searchInput.addEventListener("input", async () => {
+      const searchQuery = searchInput.value.toLowerCase();
+      const snapshot = await db.collection("trash").get();
+      deletedMembersList.innerHTML = ""; // Clear the list before re-rendering
+
+      snapshot.forEach(doc => {
+        const member = doc.data();
+        if (
+          member.name.toLowerCase().includes(searchQuery) ||
+          member.cardCode.toLowerCase().includes(searchQuery) ||
+          member.rank.toLowerCase().includes(searchQuery)
+        ) {
+          const memberItem = document.createElement("li");
+          memberItem.id = doc.id;
+          memberItem.innerHTML = `
+            <p><strong>اسم العضو:</strong> ${member.name}</p>
+            <p><strong>كود البطاقة:</strong> ${member.cardCode}</p>
+            <p><strong>الرتبة:</strong> ${member.rank}</p>
+            <p><strong>الإنجازات:</strong> ${member.achievements}</p>
+            <p><strong>المخالفات:</strong> ${member.violations}</p>
+          `;
+          deletedMembersList.appendChild(memberItem);
+        }
+      });
+    });
+
+    // Call fetch function to load deleted members initially
+    fetchDeletedMembers();
+  </script>
+</body>
+</html>

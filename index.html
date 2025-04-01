@@ -27,11 +27,12 @@
 </head>
 <body>
   <header>
-    <h1>إدارة القطاعات والأعضاء</h1>
+    <h1>الرئيسية</h1>
     <nav>
       <a href="index.html">الرئيسية</a>
       <a href="sectors.html">القطاعات</a>
       <a href="trash.html">سلة المحذوفات</a>
+      <a href="membermanage.html"> الاعضاء</a>
     </nav>
   </header>
   <section id="sectors-section">
@@ -63,9 +64,7 @@
           const member = memberDoc.data();
           const memberDiv = document.createElement('div');
           memberDiv.className = 'member';
-          memberDiv.innerHTML = `<p>اسم العضو: ${member.name}</p>
-                                 <p>الرتبة: ${member.rank}</p>
-                                 <p>كود البطاقة: ${member.cardCode}</p>`;
+          memberDiv.innerHTML = `<p>اسم العضو: ${member.name}</p>`;
           card.appendChild(memberDiv);
         });
         sectorsList.appendChild(card);
