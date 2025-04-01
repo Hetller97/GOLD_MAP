@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>إدارة القطاعات والأعضاء</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #eef2f3; color: #333; direction: rtl; padding: 20px; }
+    .container { max-width: 1200px; margin: auto; }
+    h1, h2, h3 { margin-bottom: 10px; }
+    form { background: #fff; padding: 15px; border-radius: 5px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    form input, form textarea, form button { width: 100%; margin-bottom: 10px; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; }
+    form button { background: #2d89ef; color: #fff; border: none; cursor: pointer; }
+    form button:hover { background: #1b5fa7; }
+    .sector-card { background: #fff; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 20px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .sector-header { cursor: pointer; font-size: 18px; font-weight: bold; padding: 10px; background: #2d89ef; color: #fff; border-radius: 4px; }
+    .sector-header:hover { background: #1b5fa7; }
+    .sector-content { padding: 10px; display: none; }
+    .buttons { margin-top: 10px; }
+    .buttons button { padding: 8px 12px; border: none; border-radius: 4px; margin-right: 10px; cursor: pointer; font-size: 14px; }
+    .detail-btn { background: #0851FF; color: #fff; }
+    .member-btn { background: #0851FF; color: #fff; }
+    .edit-btn { background: #0851FF; color: #fff; }
+    .delete-btn { background: #dc3545; color: #fff; }
+    .save-btn { background: #0851FF; color: #fff; }
+    .cancel-btn { background: #6c757d; color: #fff; }
+    .confirm-btn { background: #dc3545; color: #fff; }
+    .detail-btn:hover { background: #138496; }
+    .member-btn:hover { background: #d4a200; }
+    .edit-btn:hover { background: #e69500; }
+    .delete-btn:hover, .confirm-btn:hover { background: #b02a37; }
+    .save-btn:hover { background: #1e7e34; }
+    .cancel-btn:hover { background: #565e64; }
+    .details-view, .members-view, .edit-mode, .edit-member { display: none; }
+    .details-view p, .member-info p { margin-bottom: 8px; }
+    .member-dropdown { margin-top: 10px; }
+    .member-dropdown select { padding: 8px; width: 100%; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; }
+    .member-info { margin-top: 10px; padding: 10px; background: #f9f9f9; border: 1px solid #eee; border-radius: 4px; }
+    .member { border: 1px solid #eee; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
+    /* إخفاء نموذج إضافة الأعضاء عند عرض تفاصيل القطاع */
+    .hide-member-form { display: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>إدارة القطاعات والأعضاء</h1>
+    <nav>
+      <a href="index.html">الرئيسية</a>
+      <a href="sectors.html">القطاعات</a>
+      <a href="trash.html">سلة المحذوفات</a>
+    </nav>
+  </header>
+  <div class="container">
+    <h1>إدارة القطاعات والأعضاء</h1>
+    <h2>إضافة قطاع جديد</h2>
+    <form id="add-sector-form">
+      <input type="text" id="sector-name" placeholder="اسم القطاع" required>
+      <textarea id="sector-description" placeholder="وصف القطاع" required></textarea>
+      <input type="text" id="sector-storage" placeholder="المخزن">
+      <input type="text" id="sector-workSystem" placeholder="نظام العمل">
+      <input type="text" id="sector-dailySchedule" placeholder="جدول العمل اليومي">
+      <button type="submit">إضافة القطاع</button>
+    </form>
+    
+    <div id="sectors-container"></div>
+  </div>
+  
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDr1lB9EWknmFTFiAjyMgizLeAuoc8GLH4",
+      authDomain: "anim-b28b3.firebaseapp.com",
+      projectId: "anim-b28b3",
+      storageBucket: "anim-b28b3.firebasestorage.app",
+      messagingSenderId: "246758005181",
+      appId: "1:246758005181:web:0fda721c7d138e19871ad4",
+      measurementId: "G-M0BXLKKC9S"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    
+    document.getElementById('add-sector-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('sector-name').value;
+      const description = document.getElementById('sector-description').value;
+      const storage = document.getElementById('sector-storage').value;
+      const workSystem = document.getElementById('sector-workSystem').value;
+      const dailySchedule = document.getElementById('sector-dailySchedule').value;
+      try {
+        await db.collection('sectors').add({ name, description, storage, workSystem, dailySchedule });
+        e.target.reset();
+        loadSectors();
+      } catch (error) {
+        console.error(error);
+      }
+    });
+    
+    async function loadSectors() {
+      const container = document.getElementById('sectors-container');
+      container.innerHTML = '';
+      const snapshot = await db.collection('sectors').get();
+      snapshot.forEach(doc => {
+        const sector = doc.data();
+        const sectorId = doc.id;
+        const card = document.createElement('div');
+        card.className = 'sector-card';
+        
+        // عنوان القطاع (الظاهر دائماً)
+        const header = document.createElement('div');
+        header.className = 'sector-header';
+        header.innerText = sector.name;
+        header.addEventListener('click', () => {
+          const content = card.querySelector('.sector-content');
+          content.style.display = (content.style.display === 'block') ? 'none' : 'block';
+        });
+        card.appendChild(header);
+        
+        const content = document.createElement('div');
+        content.className = 'sector-content';
+        
+        // عرض وتعديل معلومات القطاع
+        const displayView = document.createElement('div');
+        displayView.className = 'details-view';
+        displayView.innerHTML = `
+          <p><strong>الوصف:</strong> ${sector.description}</p>
+          <p><strong>المخزن:</strong> ${sector.storage || '---'}</p>
+          <p><strong>نظام العمل:</strong> ${sector.workSystem || '---'}</p>
+          <p><strong>جدول العمل اليومي:</strong> ${sector.dailySchedule || '---'}</p>
+        `;
+        
+        const editView = document.createElement('div');
+        editView.className = 'edit-mode';
+        editView.innerHTML = `
+          <input type="text" id="edit-name-${sectorId}" value="${sector.name}" placeholder="اسم القطاع">
+          <textarea id="edit-description-${sectorId}" placeholder="وصف القطاع">${sector.description}</textarea>
+          <input type="text" id="edit-storage-${sectorId}" value="${sector.storage || ''}" placeholder="المخزن">
+          <input type="text" id="edit-workSystem-${sectorId}" value="${sector.workSystem || ''}" placeholder="نظام العمل">
+          <input type="text" id="edit-dailySchedule-${sectorId}" value="${sector.dailySchedule || ''}" placeholder="جدول العمل اليومي">
+          <div class="buttons">
+            <button class="save-btn" onclick="saveSector('${sectorId}')">حفظ</button>
+            <button class="cancel-btn" onclick="cancelEditSector('${sectorId}')">إلغاء</button>
+          </div>
+        `;
+        
+        // أزرار العمليات على القطاع
+        const btnsDiv = document.createElement('div');
+        btnsDiv.className = 'buttons';
+        const detailBtn = document.createElement('button');
+        detailBtn.className = 'detail-btn';
+        detailBtn.innerText = 'عرض التفاصيل';
+        detailBtn.addEventListener('click', () => {
+          displayView.style.display = 'block';
+          editView.style.display = 'none';
+          membersView.style.display = 'none';
+          addMemberDiv.classList.add('hide-member-form'); // إخفاء نموذج إضافة الأعضاء
+        });
+        const memberBtn = document.createElement('button');
+        memberBtn.className = 'member-btn';
+        memberBtn.innerText = 'الأعضاء';
+        memberBtn.addEventListener('click', () => {
+          displayView.style.display = 'none';
+          editView.style.display = 'none';
+          membersView.style.display = 'block';
+          addMemberDiv.classList.remove('hide-member-form'); // عرض نموذج إضافة الأعضاء
+          loadMembersDropdown(sectorId, memberSelect);
+        });
+        const editBtn = document.createElement('button');
+        editBtn.className = 'edit-btn';
+        editBtn.innerText = 'تعديل القطاع';
+        editBtn.addEventListener('click', () => {
+          displayView.style.display = 'none';
+          editView.style.display = 'block';
+        });
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.innerText = 'حذف القطاع';
+        deleteBtn.addEventListener('click', () => {
+          if(confirm('هل أنت متأكد من حذف هذا القطاع؟')) {
+            deleteSector(sectorId);
+          }
+        });
+        btnsDiv.appendChild(detailBtn);
+        btnsDiv.appendChild(memberBtn);
+        btnsDiv.appendChild(editBtn);
+        btnsDiv.appendChild(deleteBtn);
+        
+        // قسم الأعضاء
+        const membersView = document.createElement('div');
+        membersView.className = 'members-view';
+        const memberSelectDiv = document.createElement('div');
+        memberSelectDiv.className = 'member-dropdown';
+        const memberSelect = document.createElement('select');
+        memberSelect.innerHTML = `<option value="">-- اختر عضو --</option>`;
+        memberSelectDiv.appendChild(memberSelect);
+        const memberDisplay = document.createElement('div');
+        memberDisplay.className = 'member-info';
+        membersView.appendChild(memberSelectDiv);
+        membersView.appendChild(memberDisplay);
+        
+        // نموذج إضافة عضو (يظهر عند عرض الأعضاء)
+        const addMemberDiv = document.createElement('div');
+        addMemberDiv.className = 'member-form';
+        addMemberDiv.innerHTML = `
+          <input type="text" id="member-name-${sectorId}" placeholder="اسم العضو">
+          <input type="text" id="member-rank-${sectorId}" placeholder="الرتبة">
+          <input type="text" id="member-cardCode-${sectorId}" placeholder="كود البطاقة">
+          <input type="text" id="member-alerts-${sectorId}" placeholder="تنبيهات/أخطاء العضو">
+          <button onclick="addMember('${sectorId}')">إضافة عضو</button>
+        `;
+        
+        content.appendChild(btnsDiv);
+        content.appendChild(displayView);
+        content.appendChild(editView);
+        content.appendChild(membersView);
+        content.appendChild(addMemberDiv);
+        card.appendChild(content);
+        container.appendChild(card);
+      });
+    }
+    
+    async function saveSector(sectorId) {
+      const name = document.getElementById(`edit-name-${sectorId}`).value;
+      const description = document.getElementById(`edit-description-${sectorId}`).value;
+      const storage = document.getElementById(`edit-storage-${sectorId}`).value;
+      const workSystem = document.getElementById(`edit-workSystem-${sectorId}`).value;
+      const dailySchedule = document.getElementById(`edit-dailySchedule-${sectorId}`).value;
+      try {
+        await db.collection('sectors').doc(sectorId).update({ name, description, storage, workSystem, dailySchedule });
+        loadSectors();
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    
+    function cancelEditSector(sectorId) {
+      loadSectors();
+    }
+    
+    async function deleteSector(sectorId) {
+      try {
+        const sectorDoc = await db.collection('sectors').doc(sectorId).get();
+        if(sectorDoc.exists) {
+          const sectorData = sectorDoc.data();
+          await db.collection('Trash').doc(sectorId).set(sectorData);
+          await db.collection('sectors').doc(sectorId).delete();
+          loadSectors();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    
+    async function loadMembersDropdown(sectorId, selectElement) {
+      selectElement.innerHTML = `<option value="">-- اختر عضو --</option>`;
+      const snapshot = await db.collection('sectors').doc(sectorId).collection('members').get();
+      snapshot.forEach(memberDoc => {
+        const member = memberDoc.data();
+        const option = document.createElement('option');
+        option.value = memberDoc.id;
+        option.text = `${member.name} (${member.rank})`;
+        selectElement.appendChild(option);
+      });
+      selectElement.onchange = async function() {
+        const memberId = this.value;
+        const displayDiv = this.parentElement.nextElementSibling;
+        if(memberId) {
+          const memberDoc = await db.collection('sectors').doc(sectorId).collection('members').doc(memberId).get();
+          if(memberDoc.exists) {
+            const m = memberDoc.data();
+            displayDiv.innerHTML = `
+              <p><strong>الاسم:</strong> ${m.name}</p>
+              <p><strong>الرتبة:</strong> ${m.rank}</p>
+              <p><strong>كود البطاقة:</strong> ${m.cardCode}</p>
+              <p><strong>التنبيهات/الأخطاء:</strong> ${m.alerts || '---'}</p>
+              <button class="edit-btn" onclick="editMember('${sectorId}', '${memberDoc.id}', this)">تعديل عضو</button>
+              <button class="delete-btn" onclick="deleteMember('${sectorId}', '${memberDoc.id}')">حذف عضو</button>
+              <div class="edit-member" style="display:none;"></div>
+            `;
+          } else {
+            displayDiv.innerHTML = '';
+          }
+        } else {
+          displayDiv.innerHTML = '';
+        }
+      }
+    }
+    
+    async function addMember(sectorId) {
+      const nameField = document.getElementById(`member-name-${sectorId}`);
+      const rankField = document.getElementById(`member-rank-${sectorId}`);
+      const cardCodeField = document.getElementById(`member-cardCode-${sectorId}`);
+      const alertsField = document.getElementById(`member-alerts-${sectorId}`);
+      const name = nameField.value, rank = rankField.value, cardCode = cardCodeField.value, alerts = alertsField.value;
+      if(!name || !rank || !cardCode) { alert('يرجى ملء الحقول'); return; }
+      try {
+        await db.collection('sectors').doc(sectorId).collection('members').add({ name, rank, cardCode, alerts });
+        nameField.value = ''; rankField.value = ''; cardCodeField.value = ''; alertsField.value = '';
+        loadSectors();
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    
+    function editMember(sectorId, memberId, btn) {
+      const memberDiv = btn.parentElement.parentElement;
+      let editDiv = memberDiv.querySelector('.edit-member');
+      if(!editDiv.innerHTML) {
+        editDiv.innerHTML = `
+          <input type="text" id="edit-member-name-${sectorId}-${memberId}" placeholder="اسم العضو">
+          <input type="text" id="edit-member-rank-${sectorId}-${memberId}" placeholder="الرتبة">
+          <input type="text" id="edit-member-cardCode-${sectorId}-${memberId}" placeholder="كود البطاقة">
+          <input type="text" id="edit-member-alerts-${sectorId}-${memberId}" placeholder="تنبيهات/أخطاء العضو">
+          <button class="save-btn" onclick="saveMember('${sectorId}', '${memberId}', this)">حفظ</button>
+          <button class="cancel-btn" onclick="cancelEditMember('${sectorId}', '${memberId}', this)">إلغاء</button>
+        `;
+      }
+      editDiv.style.display = 'block';
+    }
+    
+    async function saveMember(sectorId, memberId, btn) {
+      const name = document.getElementById(`edit-member-name-${sectorId}-${memberId}`).value;
+      const rank = document.getElementById(`edit-member-rank-${sectorId}-${memberId}`).value;
+      const cardCode = document.getElementById(`edit-member-cardCode-${sectorId}-${memberId}`).value;
+      const alerts = document.getElementById(`edit-member-alerts-${sectorId}-${memberId}`).value;
+      try {
+        await db.collection('sectors').doc(sectorId).collection('members').doc(memberId).update({ name, rank, cardCode, alerts });
+        loadSectors();
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    
+    function cancelEditMember(sectorId, memberId, btn) {
+      loadSectors();
+    }
+    
+    async function deleteMember(sectorId, memberId) {
+      try {
+        const memberRef = db.collection('sectors').doc(sectorId).collection('members').doc(memberId);
+        const memberDoc = await memberRef.get();
+        if(memberDoc.exists) {
+          const memberData = memberDoc.data();
+          await db.collection('Trash').doc(memberId).set(memberData);
+          await memberRef.delete();
+          loadSectors();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    
+    loadSectors();
+  </script>
+</body>
+</html>

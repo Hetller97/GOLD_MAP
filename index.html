@@ -1,373 +1,77 @@
-<!-- <!DOCTYPE html>
-<html lang="ar">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>خريطة أنمي غولد</title>
-<link rel="stylesheet" href="styles.css">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-<div class="bg"></div>
-<section>
-<div id="mainPage" class="container">
-    <div class="button" onclick="navigateTo('animeGoldPage')">
-        <img src="GOLD.png" alt="شعار أنمي غولد">  استبدل # برابط شعار أنمي غولد -
-        <p>أنمي غولد</p>
-    </div>
-</div>
-
-<div id="animeGoldPage" class="container hidden">
-    <button class="backButton" onclick="goBack()">↩ الرجوع للخلف</button>
-    <button class="homeButton" onclick="goHome()">🏠 الصفحة الرئيسية</button>
-
-    <div class="button" onclick="navigateTo('entertainmentPage')">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731436512/samples/man-portrait.jpg" alt="شعار المجمع الترفيهي">
-        <p>المجمع الترفيهي</p>
-    </div>
-    <div class="button" onclick="navigateTo('regionsPage')">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731436514/cld-sample.jpg" alt="شعار الأقاليم">
-        <p>الأقاليم</p>
-    </div>
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731436513/samples/dessert-on-a-plate.jpg" alt="شعار محكمة غولد">
-        <p>محكمة غولد</p>
-    </div>
-    <div class="button">
-        <img src="#" alt="شعار مجلس الشيوخ">
-        <p>مجلس الشيوخ</p>
-    </div>
-    <div class="button">
-        <img src="#" alt="شعار إدارة أنمي غولد">
-        <p>إدارة أنمي غولد</p>
-    </div>
-</div>
-
-<div id="entertainmentPage" class="container hidden">
-    <button class="backButton" onclick="goBack()">↩ الرجوع للخلف</button>
-    <button class="homeButton" onclick="goHome()">🏠 الصفحة الرئيسية</button>
-
-    <div class="button">
-        <img src="#" alt="شعار قطاع الثقافة">
-        <p>قطاع الثقافة</p>
-    </div>
-    <div class="button">
-        <img src="#" alt="شعار قطاع الصحافة">
-        <p>قطاع الصحافة</p>
-    </div>
-    <div class="button">
-        <img src="#" alt="شعار قطاع الرسم">
-        <p>قطاع الرسم</p>
-    </div>
-    <div class="button">
-        <img src="#" alt="شعار قطاع تاجيس">
-        <p>قطاع تاجيس</p>
-    </div>
-    <div class="button">
-        <img src="#" alt="شعار قطاع البنك">
-        <p>قطاع البنك</p>
-    </div>
-    <div class="button">
-        <img src="#" alt="شعار قطاع التصميم">
-        <p>قطاع التصميم</p>
-    </div>
-</div>
-
-<div id="regionsPage" class="container hidden">
-    <button class="backButton" onclick="goBack()">↩ الرجوع للخلف</button>
-    <button class="homeButton" onclick="goHome()">🏠 الصفحة الرئيسية</button>
-
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439066/pml0adjpdhl6qrtqqvqk.png" alt="شعار قطاع التصميم">
-        <p>الفراعنة</p>
-    </div>
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439066/lq1ws4pxkb8cv0paojhy.png" alt="شعار قطاع التصميم">
-        <p>النينجا</p>
-    </div>
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439075/mgvpuu3githnqyxkj2hw.png" alt="شعار قطاع التصميم">
-        <p>القراصنة</p>
-    </div>
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439056/gg68nmej1uk8mma8k8t5.png" alt="شعار قطاع التصميم">
-        <p>العمالقة</p>
-    </div>
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439130/rmofdtuzwpyvnu2rbfii.png" alt="شعار قطاع التصميم">
-        <p>المماليك</p>
-    </div>
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439060/pqtomp2f0xrbo5ksw66y.png" alt="شعار قطاع التصميم">
-        <p>المافيا</p>
-    </div>
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439058/syzlb6gbro2bnetxeqlw.png" alt="شعار قطاع التصميم">
-        <p>نوفا</p>
-    </div>
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439065/wnqguecins3grbvmwtkc.png" alt="شعار قطاع التصميم">
-        <p>الفايكينغ</p>
-    </div>
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439052/t5swctjxzkzwsbrd0gb1.png" alt="شعار قطاع التصميم">
-        <p>بليتش</p>
-    </div>
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439051/jbmnr85mysmti47dnxfp.png" alt="شعار قطاع التصميم">
-        <p>الاباطرة</p>
-    </div>
-</div>
-</section>
-
-<script src="scripts.js"></script>
-</body>
-</html> -->
-
-
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>خريطة أنمي غولد</title>
-<style>
-    /* إعدادات الخلفية الثابتة */
-    body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-image: url('https://res.cloudinary.com/doe1glpxm/image/upload/v1731444052/d5wvahypnghbzntge21e.jpg'); /* استبدل الرابط بصورة الخلفية الخاصة بك */
-        background-size: cover;
-        background-attachment: fixed; /* تجعل الخلفية ثابتة */
-        background-position: center;
-        color: #fff;
-        height: 100vh;
-        margin: 0;
-        overflow: hidden;
-    }
-
-    /* إعدادات الأزرار والهيكل */
-    .container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
-        gap: 20px;
-        padding: 20px;
-        width: 100%;
-        max-width: 1200px;
-        max-height: 90vh;
-        overflow-y: auto;
-    }
-
-    .hidden {
-        display: none;
-    }
-
-    .button {
-        width: 150px;
-        height: 150px;
-        background-color: rgba(51, 51, 51, 0.8);
-        border-radius: 10px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-        transition: transform 0.2s;
-        flex-shrink: 0;
-    }
-
-    .button:hover {
-        transform: scale(1.1);
-    }
-
-    .button img {
-        width: 100px;
-        height: 100px;
-        margin-bottom: 10px;
-    }
-
-    .button p {
-        margin: 0;
-        font-size: 14px;
-    }
-
-    .backButton, .homeButton {
-        position: fixed;
-        top: 20px;
-        background-color: rgba(85, 85, 85, 0.8);
-        color: #fff;
-        border: none;
-        padding: 10px;
-        cursor: pointer;
-        border-radius: 5px;
-        z-index: 1000;
-    }
-
-    .backButton {
-        left: 20px;
-    }
-
-    .homeButton {
-        right: 20px;
-    }
-
-    /* جعل الأزرار متجاوبة على الأجهزة الصغيرة */
-    @media (max-width: 600px) {
-        .button {
-            width: 80px;
-            height: 80px;
-        }
-
-        .button img {
-            width: 40px;
-            height: 40px;
-        }
-
-        .button p {
-            font-size: 12px;
-        }
-    }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>إدارة القطاعات والأعضاء</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f4f4f4; color: #333; direction: rtl; line-height: 1.6; padding: 20px; }
+    header { background: #007BFF; color: #fff; padding: 15px 20px; border-radius: 5px; margin-bottom: 20px; }
+    header h1 { margin-bottom: 10px; font-size: 24px; }
+    nav { display: flex; gap: 10px; flex-wrap: wrap; }
+    nav a { background: #0056b3; color: #fff; padding: 8px 12px; text-decoration: none; border-radius: 3px; transition: background 0.3s; }
+    nav a:hover { background: #003f7f; }
+    section { margin-bottom: 30px; }
+    section h2 { margin-bottom: 15px; font-size: 20px; border-bottom: 2px solid #ccc; padding-bottom: 5px; }
+    .grid { display: flex; flex-wrap: wrap; gap: 15px; }
+    .card { background: #fff; border: 1px solid #ddd; border-radius: 5px; padding: 15px; flex: 1 0 300px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s; }
+    .card:hover { transform: translateY(-5px); }
+    .card h3 { margin-bottom: 10px; font-size: 18px; }
+    .card p { margin-bottom: 8px; font-size: 14px; }
+    .member { border-top: 1px solid #eee; padding-top: 8px; margin-top: 8px; }
+  </style>
 </head>
 <body>
-
-<!-- الصفحة الرئيسية -->
-<div id="mainPage" class="container">
-    <div class="button" onclick="navigateTo('animeGoldPage')">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731444083/zgzr1c0lmkpd6y2c2hfs.png" alt="شعار أنمي غولد"> <!-- استبدل # برابط شعار أنمي غولد -->
-        <p>أنمي غولد</p>
-    </div>
-</div>
-
-<!-- صفحة أنمي غولد -->
-<div id="animeGoldPage" class="container hidden">
-    <button class="backButton" onclick="goBack()">↩ الرجوع للخلف</button>
-    <button class="homeButton" onclick="goHome()">🏠 الصفحة الرئيسية</button>
-
-    <div class="button" onclick="navigateTo('entertainmentPage')">
-        <img src="#" alt="شعار المجمع الترفيهي">
-        <p>المجمع الترفيهي</p>
-    </div>
-    <div class="button" onclick="navigateTo('regionsPage')">
-        <img src="#" alt="شعار الأقاليم">
-        <p>الأقاليم</p>
-    </div>
-    <div class="button">
-        <img src="#" alt="شعار محكمة غولد">
-        <p>محكمة غولد</p>
-    </div>
-    <div class="button">
-        <img src="#" alt="شعار مجلس الشيوخ">
-        <p>مجلس الشيوخ</p>
-    </div>
-    <div class="button">
-        <img src="#" alt="شعار إدارة أنمي غولد">
-        <p>إدارة أنمي غولد</p>
-    </div>
-</div>
-
-<!-- صفحة المجمع الترفيهي -->
-<div id="entertainmentPage" class="container hidden">
-    <button class="backButton" onclick="goBack()">↩ الرجوع للخلف</button>
-    <button class="homeButton" onclick="goHome()">🏠 الصفحة الرئيسية</button>
-
-    <div class="button">
-        <p>قطاع الثقافة</p>
-    </div>
-    <div class="button">
-        <p>قطاع الصحافة</p>
-    </div>
-    <div class="button">
-        <p>قطاع الرسم</p>
-    </div>
-    <div class="button">
-        <p>قطاع تاجيس</p>
-    </div>
-    <div class="button">
-        <p>قطاع البنك</p>
-    </div>
-    <div class="button">
-        <p>قطاع التصميم</p>
-    </div>
-</div>
-
-<!-- صفحة الأقاليم -->
-<div id="regionsPage" class="container hidden">
-    <button class="backButton" onclick="goBack()">↩ الرجوع للخلف</button>
-    <button class="homeButton" onclick="goHome()">🏠 الصفحة الرئيسية</button>
-
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439066/pml0adjpdhl6qrtqqvqk.png" alt="شعار قطاع التصميم">
-        <p>الفراعنة</p>
-    </div>
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439066/lq1ws4pxkb8cv0paojhy.png" alt="شعار قطاع التصميم">
-        <p>النينجا</p>
-    </div>
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439075/mgvpuu3githnqyxkj2hw.png" alt="شعار قطاع التصميم">
-        <p>القراصنة</p>
-    </div>
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439075/mgvpuu3githnqyxkj2hw.png" alt="شعار قطاع التصميم">
-        <p>العمالقة</p>
-    </div>
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439130/rmofdtuzwpyvnu2rbfii.png" alt="شعار قطاع التصميم">
-        <p>المماليك</p>
-    </div>
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439060/pqtomp2f0xrbo5ksw66y.png" alt="شعار قطاع التصميم">
-        <p>المافيا</p>
-    </div>
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439058/syzlb6gbro2bnetxeqlw.png" alt="شعار قطاع التصميم">
-        <p>نوفا</p>
-    </div>
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439065/wnqguecins3grbvmwtkc.png" alt="شعار قطاع التصميم">
-        <p>الفايكينغ</p>
-    </div>
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439052/t5swctjxzkzwsbrd0gb1.png" alt="شعار قطاع التصميم">
-        <p>بليتش</p>
-    </div>
-    <div class="button">
-        <img src="https://res.cloudinary.com/doe1glpxm/image/upload/v1731439051/jbmnr85mysmti47dnxfp.png" alt="شعار قطاع التصميم">
-        <p>الاباطرة</p>
-    </div>
-</div>
-
-<script>
-    let historyStack = [];
-
-    function navigateTo(pageId) {
-        const currentPage = document.querySelector('.container:not(.hidden)');
-        if (currentPage) {
-            historyStack.push(currentPage.id);
-            currentPage.classList.add('hidden');
-        }
-        document.getElementById(pageId).classList.remove('hidden');
+  <header>
+    <h1>إدارة القطاعات والأعضاء</h1>
+    <nav>
+      <a href="index.html">الرئيسية</a>
+      <a href="sectors.html">القطاعات</a>
+      <a href="trash.html">سلة المحذوفات</a>
+    </nav>
+  </header>
+  <section id="sectors-section">
+    <h2>القطاعات</h2>
+    <div id="sectors-list" class="grid"></div>
+  </section>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDr1lB9EWknmFTFiAjyMgizLeAuoc8GLH4",
+      authDomain: "anim-b28b3.firebaseapp.com",
+      projectId: "anim-b28b3",
+      storageBucket: "anim-b28b3.firebasestorage.app",
+      messagingSenderId: "246758005181",
+      appId: "1:246758005181:web:0fda721c7d138e19871ad4",
+      measurementId: "G-M0BXLKKC9S"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    async function fetchSectors() {
+      const sectorsList = document.getElementById('sectors-list');
+      const sectorsSnapshot = await db.collection('sectors').get();
+      sectorsSnapshot.forEach(async (doc) => {
+        const sector = doc.data();
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `<h3>${sector.name}</h3><p>${sector.description}</p>`;
+        const membersSnapshot = await db.collection('sectors').doc(doc.id).collection('members').get();
+        membersSnapshot.forEach((memberDoc) => {
+          const member = memberDoc.data();
+          const memberDiv = document.createElement('div');
+          memberDiv.className = 'member';
+          memberDiv.innerHTML = `<p>اسم العضو: ${member.name}</p>
+                                 <p>الرتبة: ${member.rank}</p>
+                                 <p>كود البطاقة: ${member.cardCode}</p>`;
+          card.appendChild(memberDiv);
+        });
+        sectorsList.appendChild(card);
+      });
     }
-
-    function goBack() {
-        const currentPage = document.querySelector('.container:not(.hidden)');
-        currentPage.classList.add('hidden');
-        const previousPageId = historyStack.pop();
-        document.getElementById(previousPageId).classList.remove('hidden');
-    }
-
-    function goHome() {
-        const currentPage = document.querySelector('.container:not(.hidden)');
-        currentPage.classList.add('hidden');
-        historyStack = [];
-        document.getElementById('mainPage').classList.remove('hidden');
-    }
-</script>
-
+    fetchSectors();
+  </script>
 </body>
 </html>
